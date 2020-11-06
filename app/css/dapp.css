@@ -1,0 +1,15 @@
+body {
+    font-family: monospace;
+}
+#header {
+    padding: 5px 5px 0 5px;
+    background-color: lavender;
+}
+#main {
+    padding: 0 5px 0 5px;
+    background-color: lightgrey;
+}
+#footer {
+    padding: 0 5px 5px 5px;
+    background-color: lightsalmon;
+}

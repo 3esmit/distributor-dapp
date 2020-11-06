@@ -1,0 +1,7 @@
+.embark
+chains.json
+.password
+coverage
+dist
+embarkArtifacts
+node_modules
