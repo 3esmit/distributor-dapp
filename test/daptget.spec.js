@@ -36,10 +36,10 @@ config(
         },
         "DAptGet": {
           "args": [
-            "0x35dcad9d6faf12cb07e3766b7626a4c991cf65242dc6c114e6ad230cd8bebff1",
-            "$PublicResolver",
             "$accounts[0]",
-            "$ENSRegistry"
+            "$ENSRegistry",
+            "$PublicResolver",
+            "0x35dcad9d6faf12cb07e3766b7626a4c991cf65242dc6c114e6ad230cd8bebff1"
           ],
           "onDeploy": [
             "await BaseRegistrarImplementation.methods.register('0xc1c685acc1281659f9d28f427afbdc0777de9c362f50ebabbd2a0febea59dead', web3.eth.defaultAccount,"+ethregistrarDuration+").send()",
@@ -56,18 +56,24 @@ config(
 const ENSRegistry = artifacts.require('ENSRegistry');
 const PublicResolver = artifacts.require('PublicResolver');
 const DAptGet = artifacts.require('DAptGet');
+const DAptGetEntry = artifacts.require('DAptGetEntry');
 
 contract('DAptGet', function () {
   ControlledSpec.Test(DAptGet);
 
-  it("should set entry", async function() {
-    await DAptGet.methods.addEntry("test", "0x11229988").send();
-    let resolverAddress = await ENSRegistry.methods.resolver(namehash.hash("test.distributordapps.eth")).call();
+  it("should create app", async function() {
+    await DAptGet.methods.createApp("statusdesktop").send({from: accountsArr[0]});
+    let ownerAddress = await ENSRegistry.methods.owner(namehash.hash("statusdesktop.distributordapps.eth")).call();
     
-    assert(resolverAddress, PublicResolver.address);
-    let contenthash = await PublicResolver.methods.contenthash(namehash.hash("test.distributordapps.eth"));
-    assert("0x11229988", contenthash);
+    assert(ownerAddress != constants.ZERO_ADDRESS);
+
 
   });
-  
+  it("should create a distro", async function() {
+    let ownerAddress = await ENSRegistry.methods.owner(namehash.hash("statusdesktop.distributordapps.eth")).call();
+    let appEntry = new web3.eth.Contract(DAptGetEntry.abiDefinition, ownerAddress);
+    await appEntry.methods.addDistro("linux64", "0x11229988").send({gas: 1000000, from: accountsArr[0]});
+    let contenthash = await PublicResolver.methods.contenthash(namehash.hash("linux64.statusdesktop.distributordapps.eth"));
+    assert("0x11229988", contenthash);
+  });
 });

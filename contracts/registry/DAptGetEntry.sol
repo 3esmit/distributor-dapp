@@ -3,7 +3,6 @@
 pragma solidity ^0.6.0;
 
 import "./ENSSubdomainRegistrar.sol";
-import "./DAptGetEntry.sol";
 import "../common/Controlled.sol";
 import "../ens/ENS.sol";
 import "../ens/PublicResolver.sol";
@@ -12,10 +11,9 @@ import "../ens/PublicResolver.sol";
  * @author Ricardo Guilherme Schmidt (Status Research & Development GmbH)
  * @title DAptGet
  * @notice Distributes Dapps
- * @dev Unsafe contract! Do not use in production!
  */
-contract DAptGet is ENSSubdomainRegistrar, Controlled {
-    event Created(bytes32 indexed label, address _entry);
+contract DAptGetEntry is ENSSubdomainRegistrar, Controlled {
+    event Release(bytes32 indexed label, bytes contenthash);
     string[] public list;
 
     constructor(
@@ -35,13 +33,18 @@ contract DAptGet is ENSSubdomainRegistrar, Controlled {
 
     }
 
-    function createApp(string calldata _name) external virtual {
-        bytes32 label = keccak256(abi.encodePacked(_name));
-        bytes32 subnode = keccak256(abi.encodePacked(ensNode, label));
-        address entry = address(new DAptGetEntry(msg.sender, ensRegistry, defaultResolver, subnode));
-        _register(entry, label);
-        list.push(_name);
-        emit Created(label, entry);
+    function addDistro(
+        string calldata _distro,
+        bytes calldata _contenthash
+    )
+        external
+        virtual
+        onlyController
+    {
+        bytes32 label = keccak256(abi.encodePacked(_distro));
+        _register(address(this), label, _contenthash);
+        list.push(_distro);
+        emit Release(label, _contenthash);
     }
 
 }
