@@ -67,7 +67,6 @@ contract('DAptGet', function () {
     
     assert(ownerAddress != constants.ZERO_ADDRESS);
 
-
   });
   it("should create a distro", async function() {
     let ownerAddress = await ENSRegistry.methods.owner(namehash.hash("statusdesktop.distributordapps.eth")).call();
@@ -75,5 +74,18 @@ contract('DAptGet', function () {
     await appEntry.methods.addDistro("linux64", "0x11229988").send({gas: 1000000, from: accountsArr[0]});
     let contenthash = await PublicResolver.methods.contenthash(namehash.hash("linux64.statusdesktop.distributordapps.eth"));
     assert("0x11229988", contenthash);
+  });
+  it("controller should remove distros", async function() {
+    await DAptGet.methods.removeApp("statusdesktop", ["linux64"]).send({from: accountsArr[0]});
+    
+    let ownerAddress = await ENSRegistry.methods.owner(namehash.hash("statusdesktop.distributordapps.eth")).call();
+    let resolverAddress = await ENSRegistry.methods.resolver(namehash.hash("statusdesktop.distributordapps.eth")).call();
+    assert(constants.ZERO_ADDRESS, ownerAddress);
+    assert(constants.ZERO_ADDRESS, resolverAddress);
+
+    ownerAddress = await ENSRegistry.methods.owner(namehash.hash("linux64.statusdesktop.distributordapps.eth")).call();
+    resolverAddress = await ENSRegistry.methods.resolver(namehash.hash("linux64.statusdesktop.distributordapps.eth")).call();
+    assert(constants.ZERO_ADDRESS, resolverAddress);
+    assert(constants.ZERO_ADDRESS, ownerAddress);
   });
 });

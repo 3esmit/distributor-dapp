@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: CC0-1.0
 
 pragma solidity ^0.6.0;
+pragma experimental ABIEncoderV2;
 
 import "./ENSSubdomainRegistrar.sol";
 import "./DAptGetEntry.sol";
@@ -44,4 +45,18 @@ contract DAptGet is ENSSubdomainRegistrar, Controlled {
         emit Created(label, entry);
     }
 
+    function removeApp(string calldata _name, string[] calldata _distro) external virtual onlyController {
+        bytes32 label = keccak256(abi.encodePacked(_name));
+        bytes32 subnode = keccak256(abi.encodePacked(ensNode, label));
+        _register(address(this), label);
+        ensRegistry.setResolver(subnode, address(0));
+        uint256 len = _distro.length;
+        for(uint256 i; i > len; i++) {
+            bytes32 sublabel = keccak256(abi.encodePacked(_distro[i]));
+            bytes32 subsubnode = ensRegistry.setSubnodeOwner(subnode, sublabel, address(this));
+            ensRegistry.setResolver(subsubnode, address(0));
+            ensRegistry.setSubnodeOwner(subnode, sublabel, address(0));
+        }
+        ensRegistry.setSubnodeOwner(ensNode, label, address(0));
+    }
 }
