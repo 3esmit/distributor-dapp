@@ -5,6 +5,7 @@ import classnames from 'classnames';
 import {TabContent, TabPane, Navbar, Nav, NavItem, NavLink, NavbarBrand, NavbarToggler, Collapse} from 'reactstrap';
 import Ethereum from './js/Ethereum';
 import Account from './js/Account';
+import DAptGet from './js/DAptGet';
 //import './css/dapp.css';
 
 class App extends React.Component {
@@ -41,7 +42,7 @@ class App extends React.Component {
     <React.Fragment>
       <div id="header">
         <Navbar color="faded" light>
-          <NavbarBrand href="/" className="mr-auto">My Governance Example</NavbarBrand>
+          <NavbarBrand href="/" className="mr-auto">DApt Get Example</NavbarBrand>
           <NavbarToggler onClick={()=> this.setState({toggle: !toggle})} className="mr-2" />
             <Collapse isOpen={!toggle} navbar>
               <Nav vertical>
@@ -53,7 +54,7 @@ class App extends React.Component {
         </Navbar>
       </div>
       <div id="main">
-
+        <DAptGet />
       </div>
       <div id="footer">
 

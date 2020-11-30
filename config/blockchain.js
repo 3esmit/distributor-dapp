@@ -50,15 +50,15 @@ module.exports = {
     ]
   },
 
-  ropsten: {
-    networkType: "ropsten", // Can be: ropsten(ropsten), rinkeby, livenet or custom, in which case, it will use the specified networkId
+  goerli: {
+    networkType: "goerli", // Can be: goerli(goerli), rinkeby, livenet or custom, in which case, it will use the specified networkId
     syncMode: "light",
     nodiscover: false, //false enables p2p connections (default true)
     maxpeers: 25,//must be a number higher than zero (default 0)
     accounts: [
       {
         nodeAccounts: true,
-        password: "config/ropsten/.password"
+        password: "config/goerli/.password"
       }
     ]
   },

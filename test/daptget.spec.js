@@ -68,7 +68,7 @@ contract('DAptGet', function () {
     assert(ownerAddress != constants.ZERO_ADDRESS);
 
   });
-  it("should create a distro", async function() {
+  xWit("should create a distro", async function() {
     let ownerAddress = await ENSRegistry.methods.owner(namehash.hash("statusdesktop.distributordapps.eth")).call();
     let appEntry = new web3.eth.Contract(DAptGetEntry.abiDefinition, ownerAddress);
     await appEntry.methods.addDistro("linux64", "0x11229988").send({gas: 1000000, from: accountsArr[0]});

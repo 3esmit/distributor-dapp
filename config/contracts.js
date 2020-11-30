@@ -59,12 +59,28 @@ module.exports = {
     }
   },
 
-  ropsten: {
+  goerli: {
     dappConnection: [
       "$WEB3",
       "ws://localhost:8546",
       "http://localhost:8545"
     ],
+    deploy: {
+      ENSRegistry: {
+        address: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
+      },
+      PublicResolver: {
+        address: "0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41"
+      },
+      DAptGet: {
+        args: [
+          "0x879B17290648fa0d24a6d5297B82Bf6AB0aB54B9",
+          "$ENSRegistry",
+          "$PublicResolver",
+          "0xd68b70bccaa1e1197bb35ff86078adada48ec7d9d5e6a09305d4eb51179d8f7c"
+        ]
+      },
+    }
   },
 
   // default environment, merges with the settings in default
