@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "classnames": "^2.2.6",
+    "eth-cli": "^2.0.1",
     "eth-ens-namehash": "^2.0.8",
     "openzeppelin-solidity": "^3.2.0",
     "prop-types": "^15.7.2",
