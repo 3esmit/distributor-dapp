@@ -4,7 +4,7 @@ NETWORK="--goerli"
 DOMAIN_BASE="dapt.status.eth"
 CONTRACT_DAPTGET="0x146BD768397f1F15C480E851ecCd0898Be5b094D"
 CONTRACT_ENS="0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
-CONTRACT_RESOLVER="0x4b1488b7a6b320d2d721406204abc3eeaa9ad329"
+CONTRACT_RESOLVER="0x4B1488B7a6B320d2D721406204aBc3eeAa9AD329"
 
 usage()
 {
@@ -14,7 +14,8 @@ usage()
 
 ipfs_upload()
 {
-    ipfs upload $1
+    IPFSHASH=`ipfs add $1 | awk 'BEGIN{FS=" "} {print $2}'`
+    export CONTENTHASH="0x`node ./ipfs-contenthash.js $IPFSHASH`"
 }
 
 ens_setup() 
@@ -33,8 +34,10 @@ add_app(){
 
 add_release()
 {
-    NAMEHASH=`node ./ens-namehash.js $1`
-    npx eth contract:send $NETWORK publicresolver@resolver 'setContenthash('$NAMEHASH', '$2')'
+    ipfs_upload $2
+    FULLDOMAIN="$1.$DOMAIN_BASE"
+    NAMEHASH=`node ./ens-namehash.js $FULLDOMAIN`
+    npx eth contract:send $NETWORK publicresolver@resolver 'setContenthash("'$NAMEHASH'", "'$CONTENTHASH'")'
 }
 
 key_type=0
@@ -46,13 +49,15 @@ main()
             -v | --verbose )        _V=1
                                     ;;
             -k | --key )            shift 
-                                    key=$1
+                                    export ETH_CLI_PRIVATE_KEY=$1
+                                    ;;
+            -R | --register )       register=1
                                     ;;
             -d | --domain )         shift 
                                     domain=$1
                                     ;;
-            -f | --file )           shift 
-                                    file=$1
+            -r | --set-release-file ) shift 
+                                    release=$1
                                     ;;
             -kT | --key-type )      shift   
                                     key_type=$1
@@ -65,6 +70,26 @@ main()
         esac
         shift
     done
+
+    if [ $register ]; then
+        if [ -z "$domain" ]; then
+            echo "Missing domain parameter"
+            exit 1
+        fi
+        add_app $domain
+    fi
+
+    if [ ! -z "$release" ]; then
+        if [ -z "$domain" ]; then
+            echo "Missing domain parameter"
+            exit 1
+        fi
+        if [ ! -f "$release" ]; then
+            echo "$release does not exist."
+            exit 1
+        fi
+        add_release $domain $release
+    fi
 }
 
 
