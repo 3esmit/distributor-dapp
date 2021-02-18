@@ -37,6 +37,9 @@ add_release()
     ipfs_upload $2
     FULLDOMAIN="$1.$DOMAIN_BASE"
     NAMEHASH=`node ./ens-namehash.js $FULLDOMAIN`
+    if [ `npx eth contract:call $NETWORK ensregistry@ens 'resolver("'$NAMEHASH'")'` != $CONTRACT_RESOLVER ]; then
+        npx eth contract:send $NETWORK ensregistry@ens 'setResolver("'$NAMEHASH'", "'$CONTRACT_RESOLVER'")'
+    fi
     npx eth contract:send $NETWORK publicresolver@resolver 'setContenthash("'$NAMEHASH'", "'$CONTENTHASH'")'
 }
 
